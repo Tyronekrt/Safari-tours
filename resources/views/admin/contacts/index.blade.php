@@ -81,7 +81,7 @@
                                     <a href="{{ route('admin.contacts.show', $contact->id) }}" class="btn btn-sm btn-primary">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    <form action="{{ route('admin.contacts.destroy', $contact) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure?');">
+                                    <form action="{{ route('admin.contacts.destroy', $contact) }}" method="POST" style="display: inline;" data-delete-form data-confirm-message="Are you sure you want to delete this contact?">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-danger">

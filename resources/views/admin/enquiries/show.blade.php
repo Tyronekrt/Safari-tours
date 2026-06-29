@@ -189,6 +189,13 @@
                             <input type="text" name="notes" class="form-control mb-2" placeholder="Reminder notes">
                             <button type="submit" class="btn btn-warning w-100">Set Reminder</button>
                         </form>
+                        <form action="{{ route('admin.enquiries.destroy', $enquiry) }}" method="POST" data-delete-form data-confirm-message="Are you sure you want to delete this enquiry?">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger w-100 mt-2">
+                                <i class="fas fa-trash me-1"></i> Delete Enquiry
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>

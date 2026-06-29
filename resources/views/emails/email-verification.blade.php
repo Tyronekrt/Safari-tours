@@ -74,13 +74,11 @@
             <h2>Welcome to Safari Tours!</h2>
             <p>Dear {{ $user->name }},</p>
             <p>Thank you for registering with Safari Tours! We're excited to have you on board.</p>
-            <p>To complete your registration and verify your email address, please click the button below:</p>
-            <p style="text-align: center;">
-                <a href="{{ $verificationUrl }}" class="button">Verify Email Address</a>
+            <p>To complete your registration and verify your email address, please use the following verification code:</p>
+            <p style="text-align: center; background-color: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0;">
+                <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #2d5a27;">{{ $verificationCode }}</span>
             </p>
-            <p>Or copy and paste this link into your browser:</p>
-            <p style="word-break: break-all; color: #666; font-size: 12px;">{{ $verificationUrl }}</p>
-            <p><strong>This link will expire in 24 hours.</strong></p>
+            <p><strong>Important:</strong> This code will expire in 15 minutes. Enter it on the verification page to complete your registration.</p>
             <p>If you didn't create an account with Safari Tours, please ignore this email.</p>
             <p>Best regards,<br>The Safari Tours Team</p>
         </div>

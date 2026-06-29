@@ -124,15 +124,26 @@ class TestimonialController extends Controller
      */
     public function destroy(Testimonial $testimonial)
     {
-        // Delete image if exists
-        if ($testimonial->customer_image) {
-            \Storage::disk('public')->delete($testimonial->customer_image);
+        \Log::info('Attempting to delete testimonial', ['testimonial_id' => $testimonial->id, 'customer_name' => $testimonial->customer_name]);
+
+        try {
+            // Delete image if exists
+            if ($testimonial->customer_image) {
+                \Storage::disk('public')->delete($testimonial->customer_image);
+            }
+
+            $testimonial->delete();
+
+            \Log::info('Testimonial deleted successfully', ['testimonial_id' => $testimonial->id]);
+
+            return redirect()->route('admin.testimonials.index')
+                ->with('success', 'Testimonial deleted successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Failed to delete testimonial', ['testimonial_id' => $testimonial->id, 'error' => $e->getMessage()]);
+
+            return redirect()->route('admin.testimonials.index')
+                ->with('error', 'Failed to delete testimonial: ' . $e->getMessage());
         }
-
-        $testimonial->delete();
-
-        return redirect()->route('admin.testimonials.index')
-            ->with('success', 'Testimonial deleted successfully.');
     }
 
     /**

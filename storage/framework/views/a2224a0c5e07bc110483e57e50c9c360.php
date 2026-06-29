@@ -103,7 +103,7 @@
                                             <i class="fas fa-<?php echo e($user->is_active ? 'ban' : 'check'); ?>"></i>
                                         </button>
                                     </form>
-                                    <form action="<?php echo e(route('admin.users.destroy', $user->id)); ?>" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure?');">
+                                    <form action="<?php echo e(route('admin.users.destroy', $user->id)); ?>" method="POST" style="display: inline;" data-delete-form data-confirm-message="Are you sure you want to delete this user?">
                                         <?php echo csrf_field(); ?>
                                         <?php echo method_field('DELETE'); ?>
                                         <button type="submit" class="btn btn-sm btn-danger">

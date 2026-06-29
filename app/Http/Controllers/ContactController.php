@@ -101,10 +101,21 @@ class ContactController extends Controller
      */
     public function destroy(Contact $contact)
     {
-        $contact->delete();
+        \Log::info('Attempting to delete contact', ['contact_id' => $contact->id, 'email' => $contact->email]);
 
-        return redirect()->route('admin.contacts.index')
-            ->with('success', 'Contact deleted successfully.');
+        try {
+            $contact->delete();
+
+            \Log::info('Contact deleted successfully', ['contact_id' => $contact->id]);
+
+            return redirect()->route('admin.contacts.index')
+                ->with('success', 'Contact deleted successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Failed to delete contact', ['contact_id' => $contact->id, 'error' => $e->getMessage()]);
+
+            return redirect()->route('admin.contacts.index')
+                ->with('error', 'Failed to delete contact: ' . $e->getMessage());
+        }
     }
 
     /**

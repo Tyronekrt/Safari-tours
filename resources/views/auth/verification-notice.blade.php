@@ -54,21 +54,26 @@
                         <div class="alert alert-info">
                             <i class="fas fa-envelope-open-text me-2 fa-2x d-block mb-3"></i>
                             <h5 class="alert-heading">Check Your Email</h5>
-                            <strong>Before proceeding, please check your email for a verification link.</strong>
-                            <p class="mb-2 mt-2">We've sent a verification email to your registered email address.</p>
-                            @if(auth()->check() && auth()->user()->email)
+                            <strong>Before proceeding, please check your email for a verification code.</strong>
+                            <p class="mb-2 mt-2">We've sent a 6-digit verification code to your registered email address.</p>
+                            @if(session('user_email'))
                             <div class="mt-2">
                                 <small class="text-muted">
                                     <i class="fas fa-envelope me-1"></i>
-                                    Sent to: <strong>{{ auth()->user()->email }}</strong>
+                                    Sent to: <strong>{{ session('user_email') }}</strong>
                                 </small>
                             </div>
                             @endif
                             <hr>
                             <small class="text-muted">
-                                <strong>Development Note:</strong> Emails are currently logged to the file system for development. 
-                                Check the Laravel log file to find your verification link.
+                                <strong>Important:</strong> The verification code will expire in 15 minutes.
                             </small>
+                        </div>
+
+                        <div class="text-center mb-4">
+                            <a href="{{ route('verification.code') }}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-key me-2"></i>Enter Verification Code
+                            </a>
                         </div>
 
                         <div class="card bg-light mb-4">

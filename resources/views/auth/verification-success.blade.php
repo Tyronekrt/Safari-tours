@@ -7,6 +7,49 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        let countdown = 5;
+        let isRedirectCancelled = false;
+
+        function updateCountdown() {
+            if (isRedirectCancelled) return;
+            
+            const countdownElement = document.getElementById('countdown');
+            if (countdownElement) {
+                countdownElement.textContent = countdown;
+            }
+            
+            if (countdown > 0) {
+                countdown--;
+                setTimeout(updateCountdown, 1000);
+            } else {
+                if (!isRedirectCancelled) {
+                    window.location.href = "{{ route('home') }}";
+                }
+            }
+        }
+
+        function cancelRedirect() {
+            isRedirectCancelled = true;
+            const countdownElement = document.getElementById('countdown');
+            if (countdownElement) {
+                countdownElement.parentElement.innerHTML = '<span class="text-muted small">Auto-redirect cancelled</span>';
+            }
+        }
+
+        // Start the countdown when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCountdown();
+            
+            // Handle the explore button click to cancel the redirect
+            const exploreBtn = document.getElementById('explore-btn');
+            if (exploreBtn) {
+                exploreBtn.addEventListener('click', function() {
+                    isRedirectCancelled = true;
+                });
+            }
+        });
+    </script>
 </head>
 <body class="bg-light">
     <div class="container">
@@ -27,6 +70,11 @@
                                 <i class="fas fa-check-circle me-2"></i>
                                 {{ session('success') }}
                             </div>
+                        @else
+                            <div class="alert alert-success text-center">
+                                <i class="fas fa-check-circle me-2"></i>
+                                Welcome to Safari Tours! Your account is now fully activated.
+                            </div>
                         @endif
 
                         <div class="card bg-light mb-4">
@@ -40,12 +88,20 @@
                         </div>
 
                         <div class="d-grid gap-2">
-                            <a href="{{ route('home') }}" class="btn btn-primary btn-lg">
+                            <a href="{{ route('home') }}" class="btn btn-primary btn-lg" id="explore-btn">
                                 <i class="fas fa-home me-2"></i>Explore Safari Packages
                             </a>
                             <a href="{{ route('packages.index') }}" class="btn btn-outline-primary">
                                 <i class="fas fa-list me-2"></i>View All Packages
                             </a>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <p class="text-muted small">
+                                <i class="fas fa-clock me-1"></i>
+                                Redirecting to homepage in <span id="countdown">5</span> seconds...
+                            </p>
+                            <button class="btn btn-sm btn-link" onclick="cancelRedirect()">Cancel redirect</button>
                         </div>
 
                         <div class="text-center mt-4">

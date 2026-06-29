@@ -83,7 +83,7 @@
                                                 <i class="fas fa-globe"></i>
                                             </button>
                                         </form>
-                                        <form action="{{ route('admin.packages.destroy', $package) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this package?')">
+                                        <form action="{{ route('admin.packages.destroy', $package) }}" method="POST" class="d-inline" data-delete-form data-confirm-message="Are you sure you want to delete this package?">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-danger">

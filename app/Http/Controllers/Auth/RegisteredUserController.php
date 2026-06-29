@@ -28,11 +28,19 @@ class RegisteredUserController extends Controller
         try {
             $request->validate([
                 'name' => ['required', 'string', 'max:255'],
-                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,NULL,id,deleted_at,NULL'],
                 'password' => ['required', 'string', 'min:8', 'confirmed'],
                 'phone' => ['nullable', 'string', 'max:20'],
                 'country' => ['nullable', 'string', 'max:100'],
+            ], [
+                'email.unique' => 'The email has already been taken.'
             ]);
+
+            // Check if there's a soft-deleted user with this email and permanently delete them
+            $deletedUser = User::onlyTrashed()->where('email', $request->email)->first();
+            if ($deletedUser) {
+                $deletedUser->forceDelete();
+            }
 
             $user = User::create([
                 'name' => $request->name,
@@ -45,14 +53,14 @@ class RegisteredUserController extends Controller
             // Assign customer role
             $user->assignRole('customer');
 
-            // Generate verification token and send email
-            $verificationToken = $user->generateVerificationToken();
-            $verificationUrl = route('verification.verify', ['token' => $verificationToken]);
+            // Generate verification code and send email
+            $verificationCode = $user->generateVerificationCode();
 
-            Mail::to($user->email)->send(new EmailVerification($user, $verificationUrl));
+            Mail::to($user->email)->send(new EmailVerification($user, $verificationCode));
 
-            return redirect()->route('verification.notice')
-                ->with('success', 'Registration successful! Please check your email to verify your account.');
+            return redirect()->route('verification.code')
+                ->with('success', 'Registration successful! Please check your email for the verification code.')
+                ->with('user_email', $user->email);
         } catch (\Exception $e) {
             return redirect()->route('register')
                 ->with('error', 'Registration failed: ' . $e->getMessage())

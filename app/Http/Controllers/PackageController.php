@@ -189,10 +189,21 @@ class PackageController extends Controller
      */
     public function destroy(SafariPackage $package)
     {
-        $package->delete();
+        \Log::info('Attempting to delete package', ['package_id' => $package->id, 'title' => $package->title]);
 
-        return redirect()->route('admin.packages.index')
-            ->with('success', 'Package deleted successfully.');
+        try {
+            $package->delete();
+
+            \Log::info('Package deleted successfully', ['package_id' => $package->id]);
+
+            return redirect()->route('admin.packages.index')
+                ->with('success', 'Package deleted successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Failed to delete package', ['package_id' => $package->id, 'error' => $e->getMessage()]);
+
+            return redirect()->route('admin.packages.index')
+                ->with('error', 'Failed to delete package: ' . $e->getMessage());
+        }
     }
 
     /**

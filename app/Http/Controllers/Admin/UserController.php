@@ -80,7 +80,7 @@ class UserController extends Controller
         try {
             $request->validate([
                 'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
+                'email' => 'required|string|email|max:255|unique:users,email,NULL,id,deleted_at,NULL',
                 'password' => 'required|string|min:8',
                 'phone' => 'nullable|string|max:20',
                 'country' => 'nullable|string|max:100',
@@ -160,10 +160,21 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        $user->delete();
+        \Log::info('Attempting to delete user', ['user_id' => $user->id, 'email' => $user->email]);
 
-        return redirect()->route('admin.users.index')
-            ->with('success', 'User deleted successfully.');
+        try {
+            $user->delete();
+
+            \Log::info('User deleted successfully', ['user_id' => $user->id]);
+
+            return redirect()->route('admin.users.index')
+                ->with('success', 'User deleted successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Failed to delete user', ['user_id' => $user->id, 'error' => $e->getMessage()]);
+
+            return redirect()->route('admin.users.index')
+                ->with('error', 'Failed to delete user: ' . $e->getMessage());
+        }
     }
 
     /**

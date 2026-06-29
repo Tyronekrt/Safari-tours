@@ -101,6 +101,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="<?php echo e(asset('js/admin.js')); ?>"></script>
     <?php if(session('success')): ?>
         <div class="toast-container position-fixed bottom-0 end-0 p-3">
             <div class="toast show" role="alert">

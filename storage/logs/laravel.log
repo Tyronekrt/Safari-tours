@@ -7163,3 +7163,16 @@ Content-Transfer-Encoding: quoted-printable
 [2026-06-22 09:56:59] local.INFO: Generated verification token for user arnoldark829@gmail.com: 72gVOuzf68K7wZRY4J2luwkEightdrNfpXYMedAtTXIdjBwMXwyWBSTPlFLW  
 [2026-06-22 09:56:59] local.INFO: Token saved in database for user arnoldark829@gmail.com: 72gVOuzf68K7wZRY4J2luwkEightdrNfpXYMedAtTXIdjBwMXwyWBSTPlFLW  
 [2026-06-22 09:56:59] local.INFO: Verification URL: http://127.0.0.1:8000/email/verify/72gVOuzf68K7wZRY4J2luwkEightdrNfpXYMedAtTXIdjBwMXwyWBSTPlFLW  
+[2026-06-23 10:36:18] local.INFO: Email verification attempt {"token":"NspgVsNxKMN4bcR9TwIM7SRZ1E6ZnAd6LGqmgeQtPDZ6NSWl7d0Ym8LvrMNq"} 
+[2026-06-23 10:36:18] local.INFO: User successfully verified {"user_id":27,"email":"verifytest@example.com"} 
+[2026-06-25 10:13:04] local.ERROR: There are no commands defined in the "log" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"log\" namespace. at /home/kelvin/Projects/Safari/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /home/kelvin/Projects/Safari/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /home/kelvin/Projects/Safari/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /home/kelvin/Projects/Safari/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /home/kelvin/Projects/Safari/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /home/kelvin/Projects/Safari/artisan(35): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 {main}
+"} 
+[2026-06-25 10:25:13] local.INFO: Attempting to delete user {"user_id":23,"email":"mumcheru78@gmail.com"} 
+[2026-06-25 10:25:13] local.INFO: User deleted successfully {"user_id":23} 

@@ -43,7 +43,7 @@
                                     <i class="fas fa-eye"></i>
                                 </button>
                             </form>
-                            <form action="{{ route('admin.gallery.destroy', $gallery) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this photo?')">
+                            <form action="{{ route('admin.gallery.destroy', $gallery) }}" method="POST" class="d-inline" data-delete-form data-confirm-message="Are you sure you want to delete this photo?">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-danger">

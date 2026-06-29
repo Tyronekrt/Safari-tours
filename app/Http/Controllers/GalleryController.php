@@ -122,15 +122,26 @@ class GalleryController extends Controller
      */
     public function destroy(Gallery $gallery)
     {
-        // Delete image if exists
-        if ($gallery->image) {
-            \Storage::disk('public')->delete($gallery->image);
+        \Log::info('Attempting to delete gallery item', ['gallery_id' => $gallery->id, 'title' => $gallery->title]);
+
+        try {
+            // Delete image if exists
+            if ($gallery->image) {
+                \Storage::disk('public')->delete($gallery->image);
+            }
+
+            $gallery->delete();
+
+            \Log::info('Gallery item deleted successfully', ['gallery_id' => $gallery->id]);
+
+            return redirect()->route('admin.gallery.index')
+                ->with('success', 'Gallery item deleted successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Failed to delete gallery item', ['gallery_id' => $gallery->id, 'error' => $e->getMessage()]);
+
+            return redirect()->route('admin.gallery.index')
+                ->with('error', 'Failed to delete gallery item: ' . $e->getMessage());
         }
-
-        $gallery->delete();
-
-        return redirect()->route('admin.gallery.index')
-            ->with('success', 'Gallery item deleted successfully.');
     }
 
     /**

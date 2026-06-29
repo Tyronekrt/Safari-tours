@@ -104,7 +104,7 @@
                                             <i class="fas fa-{{ $user->is_active ? 'ban' : 'check' }}"></i>
                                         </button>
                                     </form>
-                                    <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure?');">
+                                    <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" style="display: inline;" data-delete-form data-confirm-message="Are you sure you want to delete this user?">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-danger">

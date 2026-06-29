@@ -300,9 +300,20 @@ class EnquiryController extends Controller
      */
     public function destroy(Enquiry $enquiry)
     {
-        $enquiry->delete();
+        \Log::info('Attempting to delete enquiry', ['enquiry_id' => $enquiry->id, 'email' => $enquiry->email]);
 
-        return redirect()->route('admin.enquiries.index')
-            ->with('success', 'Enquiry deleted successfully.');
+        try {
+            $enquiry->delete();
+
+            \Log::info('Enquiry deleted successfully', ['enquiry_id' => $enquiry->id]);
+
+            return redirect()->route('admin.enquiries.index')
+                ->with('success', 'Enquiry deleted successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Failed to delete enquiry', ['enquiry_id' => $enquiry->id, 'error' => $e->getMessage()]);
+
+            return redirect()->route('admin.enquiries.index')
+                ->with('error', 'Failed to delete enquiry: ' . $e->getMessage());
+        }
     }
 }

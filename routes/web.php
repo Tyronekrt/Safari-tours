@@ -31,6 +31,8 @@ Route::post('/register', [RegisteredUserController::class, 'store'])->name('regi
 
 // Email Verification Routes
 Route::get('/email/verify', [EmailVerificationController::class, 'notice'])->name('verification.notice');
+Route::get('/email/verify/code', [EmailVerificationController::class, 'showCodeForm'])->name('verification.code');
+Route::post('/email/verify/code', [EmailVerificationController::class, 'verifyWithCode'])->name('verification.verify.code');
 Route::get('/email/verify/{token}', [EmailVerificationController::class, 'verify'])->name('verification.verify');
 Route::get('/email/verify/success', [EmailVerificationController::class, 'success'])->name('verification.success');
 Route::post('/email/verify/resend', [EmailVerificationController::class, 'resend'])->name('verification.resend');

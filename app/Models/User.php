@@ -28,6 +28,8 @@ class User extends Authenticatable
         'avatar',
         'is_active',
         'verification_token',
+        'verification_code',
+        'verification_code_expires_at',
         'password_reset_token',
         'password_reset_expires_at'
     ];
@@ -50,6 +52,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password_reset_expires_at' => 'datetime',
+        'verification_code_expires_at' => 'datetime',
         'password' => 'hashed',
         'is_active' => 'boolean'
     ];
@@ -94,6 +97,46 @@ class User extends Authenticatable
         $this->verification_token = \Str::random(60);
         $this->save();
         return $this->verification_token;
+    }
+
+    /**
+     * Generate a 6-digit verification code for the user.
+     */
+    public function generateVerificationCode()
+    {
+        $this->verification_code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $this->verification_code_expires_at = now()->addMinutes(15);
+        $this->save();
+        return $this->verification_code;
+    }
+
+    /**
+     * Verify the user's email using code.
+     */
+    public function verifyEmailWithCode($code)
+    {
+        if ($this->verification_code !== $code) {
+            return false;
+        }
+
+        if ($this->verification_code_expires_at < now()) {
+            return false;
+        }
+
+        $this->email_verified_at = now();
+        $this->verification_code = null;
+        $this->verification_code_expires_at = null;
+        $this->verification_token = null;
+        $this->save();
+        return true;
+    }
+
+    /**
+     * Check if verification code is valid.
+     */
+    public function isVerificationCodeValid($code)
+    {
+        return $this->verification_code === $code && $this->verification_code_expires_at > now();
     }
 
     /**
