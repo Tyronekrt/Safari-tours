@@ -1,37 +1,61 @@
 # Safari Tours - Render Deployment Guide
 
-This guide will help you deploy your Safari Tours Laravel application to Render.com, a free hosting platform that supports PHP/Laravel applications with PostgreSQL databases.
+This guide will help you deploy your Safari Tours Laravel application to Render.com using Docker. Render doesn't support native PHP runtime in Blueprints, so we use Docker for deployment.
 
 ## Prerequisites
 
 - A GitHub account with your Safari Tours code pushed to a repository
 - A Render.com account (free tier)
 - Basic knowledge of Git and command line
+- Docker installed locally (for testing)
 
 ## Step 1: Prepare Your Code
 
 ### 1.1 Ensure all files are committed
 ```bash
 git add .
-git commit -m "Prepare for Render deployment"
+git commit -m "Add Docker configuration for Render deployment"
 git push origin main
 ```
 
-### 2. Configuration Files
+### 1.2 Configuration Files
 
 The following files have been created/updated for Render deployment:
 
-- `render.yaml` - Render service configuration
+- `Dockerfile` - Docker image configuration for Laravel
+- `render.yaml` - Render service configuration using Docker
+- `.dockerignore` - Files to exclude from Docker build
+- `docker-compose.yml` - Local development with Docker
 - `.env.example` - Environment variables template
 - `public/.htaccess` - Apache configuration with security headers
 
-## Step 2: Set Up Render Account
+## Step 2: Test Locally with Docker (Optional but Recommended)
+
+### 2.1 Build and run with Docker Compose
+```bash
+docker-compose up -d
+```
+
+### 2.2 Run migrations
+```bash
+docker-compose exec app php artisan migrate
+```
+
+### 2.3 Access the application
+- Open http://localhost:8000 in your browser
+
+### 2.4 Stop containers
+```bash
+docker-compose down
+```
+
+## Step 3: Set Up Render Account
 
 1. Go to [render.com](https://render.com)
 2. Sign up for a free account
 3. Connect your GitHub account
 
-## Step 3: Deploy to Render
+## Step 4: Deploy to Render
 
 ### Option A: Using render.yaml (Recommended)
 
@@ -43,7 +67,7 @@ The following files have been created/updated for Render deployment:
 
 ### Option B: Manual Setup
 
-### 3.1 Create PostgreSQL Database
+### 4.1 Create PostgreSQL Database
 
 1. Go to Render Dashboard
 2. Click "New +" → "PostgreSQL"
@@ -53,7 +77,7 @@ The following files have been created/updated for Render deployment:
 6. Select "Free" tier
 7. Click "Create Database"
 
-### 3.2 Create Web Service
+### 4.2 Create Web Service
 
 1. Go to Render Dashboard
 2. Click "New +" → "Web Service"
@@ -61,18 +85,9 @@ The following files have been created/updated for Render deployment:
 4. Configure the following:
 
 **Build & Deploy:**
-- Runtime: `PHP`
-- Build Command: 
-  ```bash
-  composer install --no-dev --optimize-autoloader
-  php artisan key:generate
-  php artisan storage:link
-  php artisan migrate --force
-  php artisan config:cache
-  php artisan route:cache
-  php artisan view:cache
-  ```
-- Start Command: `php artisan serve --host=0.0.0.0 --port=$PORT`
+- Runtime: `Docker`
+- Docker Context: `.`
+- Dockerfile Path: `./Dockerfile`
 
 **Environment Variables:**
 - `APP_ENV`: `production`
@@ -101,7 +116,29 @@ The following files have been created/updated for Render deployment:
 
 5. Click "Create Web Service"
 
-## Step 4: Configure Email Service
+## Step 5: Update Environment Variables
+
+After deployment, you'll need to update the email credentials:
+
+1. Go to your web service in Render dashboard
+2. Click "Environment" tab
+3. Update the following variables:
+   - `MAIL_USERNAME`: Your actual Mailtrap username
+   - `MAIL_PASSWORD`: Your actual Mailtrap password
+   - `MAIL_FROM_ADDRESS`: Your actual email address
+4. Click "Save Changes"
+5. The service will automatically redeploy
+
+## Step 6: Run Database Migrations
+
+The Dockerfile includes a startup script that automatically runs migrations when the container starts. However, if you need to run migrations manually:
+
+1. Go to your web service in Render dashboard
+2. Click "SSH" button to access the container
+3. Run: `php artisan migrate --force`
+4. Exit the SSH session
+
+## Step 7: Configure Email Service
 
 ### Using Mailtrap (Recommended for Development)
 
@@ -122,7 +159,7 @@ For production, consider using:
 - **Amazon SES** (pay as you go)
 - **Brevo** (formerly Sendinblue, free tier available)
 
-## Step 5: Storage Configuration
+## Step 8: Storage Configuration
 
 Render's file system is ephemeral. For persistent storage:
 
@@ -139,14 +176,14 @@ Consider using:
 - **Cloudflare R2** (free egress)
 - **Backblaze B2** (very affordable)
 
-## Step 6: Access Your Application
+## Step 9: Access Your Application
 
 1. Once deployment is complete, Render will provide a URL like:
    `https://safari-tours.onrender.com`
 2. Access your application using this URL
 3. Test the registration and verification flow
 
-## Step 7: Configure Custom Domain (Optional)
+## Step 10: Configure Custom Domain (Optional)
 
 1. Purchase a domain (e.g., Namecheap, GoDaddy)
 2. In Render dashboard, go to your web service
@@ -160,8 +197,19 @@ Consider using:
 ### Build Fails
 
 - Check the build logs in Render dashboard
-- Ensure `composer.json` is properly configured
+- Ensure `Dockerfile` is properly configured
 - Verify all dependencies are compatible with PHP version
+- Check that `.dockerignore` doesn't exclude necessary files
+- Ensure Docker context is set correctly (should be `.`)
+
+### Docker Container Issues
+
+- Check container logs in Render dashboard
+- Verify startup script is executable
+- Ensure database connection is established before migrations run
+- Check that Apache is starting correctly
+
+### Database Connection Issues
 
 ### Database Connection Issues
 

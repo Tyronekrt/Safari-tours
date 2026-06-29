@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # PHP/Apache Service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: safari-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    ports:
+      - "8000:80"
+    networks:
+      - safari-network
+    depends_on:
+      - db
+
+  # PostgreSQL Database
+  db:
+    image: postgres:15
+    container_name: safari-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: safari_tours
+      POSTGRES_USER: safari_user
+      POSTGRES_PASSWORD: safari_password
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - safari-network
+
+  # Redis (optional, for caching and queues)
+  redis:
+    image: redis:alpine
+    container_name: safari-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - safari-network
+
+networks:
+  safari-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local
