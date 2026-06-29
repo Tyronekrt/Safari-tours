@@ -3,20 +3,13 @@ services:
   - type: web
     name: safari-tours
     env: php
-    buildCommand: |
-      composer install --no-dev --optimize-autoloader
-      php artisan key:generate
-      php artisan storage:link
-      php artisan migrate --force
-      php artisan config:cache
-      php artisan route:cache
-      php artisan view:cache
+    buildCommand: composer install --no-dev --optimize-autoloader && php artisan key:generate && php artisan storage:link && php artisan migrate --force && php artisan config:cache && php artisan route:cache && php artisan view:cache
     startCommand: php artisan serve --host=0.0.0.0 --port=$PORT
     envVars:
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
-        value: false
+        value: "false"
       - key: APP_KEY
         generateValue: true
       - key: APP_URL
@@ -58,15 +51,15 @@ services:
       - key: MAIL_HOST
         value: smtp.mailtrap.io
       - key: MAIL_PORT
-        value: 2525
+        value: "2525"
       - key: MAIL_USERNAME
-        sync: false
+        value: your_mailtrap_username
       - key: MAIL_PASSWORD
-        sync: false
+        value: your_mailtrap_password
       - key: MAIL_ENCRYPTION
         value: tls
       - key: MAIL_FROM_ADDRESS
-        sync: false
+        value: noreply@safaritours.com
       - key: MAIL_FROM_NAME
         value: "Safari Tours"
 
@@ -75,4 +68,3 @@ databases:
   - name: safari-db
     databaseName: safari_tours
     user: safari_user
-    plan: free
