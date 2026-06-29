@@ -29,6 +29,17 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
 
+# Configure Apache for Laravel
+RUN echo "<VirtualHost *:80>" > /etc/apache2/sites-available/000-default.conf && \
+    echo "    DocumentRoot /var/www/html/public" >> /etc/apache2/sites-available/000-default.conf && \
+    echo "    <Directory /var/www/html/public>" >> /etc/apache2/sites-available/000-default.conf && \
+    echo "        AllowOverride All" >> /etc/apache2/sites-available/000-default.conf && \
+    echo "        Require all granted" >> /etc/apache2/sites-available/000-default.conf && \
+    echo "    </Directory>" >> /etc/apache2/sites-available/000-default.conf && \
+    echo "    ErrorLog \${APACHE_LOG_DIR}/error.log" >> /etc/apache2/sites-available/000-default.conf && \
+    echo "    CustomLog \${APACHE_LOG_DIR}/access.log combined" >> /etc/apache2/sites-available/000-default.conf && \
+    echo "</VirtualHost>" >> /etc/apache2/sites-available/000-default.conf
+
 # Copy application files
 COPY . .
 
@@ -37,8 +48,9 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage \
-    && chmod -R 755 /var/www/html/bootstrap/cache
+    && chmod -R 755 /var/www/html \
+    && chmod -R 777 /var/www/html/storage \
+    && chmod -R 777 /var/www/html/bootstrap/cache
 
 # Generate application key
 RUN php artisan key:generate || true
@@ -46,16 +58,14 @@ RUN php artisan key:generate || true
 # Create storage link
 RUN php artisan storage:link || true
 
-# Cache configuration
-RUN php artisan config:cache || true
-RUN php artisan route:cache || true
-RUN php artisan view:cache || true
-
 # Create startup script for database migrations
 RUN echo '#!/bin/bash' > /start.sh && \
-    echo 'echo "Waiting for database..."' >> /start.sh && \
-    echo 'sleep 10' >> /start.sh && \
-    echo 'php artisan migrate --force || echo "Migration failed or already run"' >> /start.sh && \
+    echo 'set -e' >> /start.sh && \
+    echo 'echo "Starting application..."' >> /start.sh && \
+    echo 'php artisan migrate --force || true' >> /start.sh && \
+    echo 'php artisan config:cache || true' >> /start.sh && \
+    echo 'php artisan route:cache || true' >> /start.sh && \
+    echo 'php artisan view:cache || true' >> /start.sh && \
     echo 'echo "Starting Apache..."' >> /start.sh && \
     echo 'apache2-foreground' >> /start.sh && \
     chmod +x /start.sh
