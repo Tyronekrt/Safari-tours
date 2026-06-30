@@ -35,8 +35,10 @@ RUN echo "<VirtualHost *:80>" > /etc/apache2/sites-available/000-default.conf &&
     echo "    <Directory /var/www/html/public>" >> /etc/apache2/sites-available/000-default.conf && \
     echo "        AllowOverride All" >> /etc/apache2/sites-available/000-default.conf && \
     echo "        Require all granted" >> /etc/apache2/sites-available/000-default.conf && \
+    echo "        Options Indexes FollowSymLinks" >> /etc/apache2/sites-available/000-default.conf && \
     echo "    </Directory>" >> /etc/apache2/sites-available/000-default.conf && \
     echo "    ErrorLog \${APACHE_LOG_DIR}/error.log" >> /etc/apache2/sites-available/000-default.conf && \
+    echo "    LogLevel debug" >> /etc/apache2/sites-available/000-default.conf && \
     echo "    CustomLog \${APACHE_LOG_DIR}/access.log combined" >> /etc/apache2/sites-available/000-default.conf && \
     echo "</VirtualHost>" >> /etc/apache2/sites-available/000-default.conf
 
@@ -50,7 +52,15 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html \
     && chmod -R 777 /var/www/html/storage \
-    && chmod -R 777 /var/www/html/bootstrap/cache
+    && chmod -R 777 /var/www/html/bootstrap/cache \
+    && chmod -R 777 /var/www/html/public
+
+# Create necessary directories
+RUN mkdir -p /var/www/html/storage/framework/cache \
+    /var/www/html/storage/framework/sessions \
+    /var/www/html/storage/framework/views \
+    /var/www/html/storage/logs \
+    /var/www/html/bootstrap/cache
 
 # Generate application key
 RUN php artisan key:generate || true
@@ -62,7 +72,11 @@ RUN php artisan storage:link || true
 RUN echo '#!/bin/bash' > /start.sh && \
     echo 'set -e' >> /start.sh && \
     echo 'echo "Starting application..."' >> /start.sh && \
+    echo 'echo "Environment:" >> /start.sh && \
+    echo 'env | sort' >> /start.sh && \
+    echo 'echo "Running migrations..."' >> /start.sh && \
     echo 'php artisan migrate --force || true' >> /start.sh && \
+    echo 'echo "Caching configuration..."' >> /start.sh && \
     echo 'php artisan config:cache || true' >> /start.sh && \
     echo 'php artisan route:cache || true' >> /start.sh && \
     echo 'php artisan view:cache || true' >> /start.sh && \
