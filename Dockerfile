@@ -72,6 +72,7 @@ RUN php artisan storage:link || true
 RUN echo '#!/bin/bash' > /start.sh && \
     echo 'set -e' >> /start.sh && \
     echo 'php artisan migrate --force || true' >> /start.sh && \
+    echo 'php artisan db:seed --force || true' >> /start.sh && \
     echo 'php artisan config:cache || true' >> /start.sh && \
     echo 'php artisan route:cache || true' >> /start.sh && \
     echo 'php artisan view:cache || true' >> /start.sh && \

@@ -10,11 +10,13 @@ services:
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
-        value: "true"
+        value: "false"
       - key: APP_KEY
         value: base64:tudfUn3M6MOMxcuO3ojb294hWwtARa55a5uD2nblowM=
       - key: APP_URL
         value: https://safari-tours-fpiu.onrender.com
+      - key: FORCE_HTTPS
+        value: "true"
       - key: LOG_CHANNEL
         value: stack
       - key: LOG_LEVEL
