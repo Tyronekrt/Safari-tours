@@ -71,16 +71,10 @@ RUN php artisan storage:link || true
 # Create startup script for database migrations
 RUN echo '#!/bin/bash' > /start.sh && \
     echo 'set -e' >> /start.sh && \
-    echo 'echo "Starting application..."' >> /start.sh && \
-    echo 'echo "Environment:" >> /start.sh && \
-    echo 'env | sort' >> /start.sh && \
-    echo 'echo "Running migrations..."' >> /start.sh && \
     echo 'php artisan migrate --force || true' >> /start.sh && \
-    echo 'echo "Caching configuration..."' >> /start.sh && \
     echo 'php artisan config:cache || true' >> /start.sh && \
     echo 'php artisan route:cache || true' >> /start.sh && \
     echo 'php artisan view:cache || true' >> /start.sh && \
-    echo 'echo "Starting Apache..."' >> /start.sh && \
     echo 'apache2-foreground' >> /start.sh && \
     chmod +x /start.sh
 
