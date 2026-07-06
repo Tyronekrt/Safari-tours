@@ -22,11 +22,6 @@ return Application::configure(basePath: dirname(__DIR__))
         // Trust proxies for Render load balancer
         $middleware->append(\App\Http\Middleware\TrustProxies::class);
 
-        // Force HTTPS in production
-        if (getenv('APP_ENV') === 'production') {
-            $middleware->redirectToHttps();
-        }
-
         // Force HTTPS scheme and secure cookies in production
         if (getenv('APP_ENV') === 'production') {
             $middleware->prepend(function ($request, $next) {
