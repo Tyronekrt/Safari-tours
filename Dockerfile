@@ -32,14 +32,17 @@ RUN a2enmod rewrite
 # Copy Apache configuration
 COPY apache.conf /etc/apache2/sites-available/000-default.conf
 
-# Copy application files
-COPY . .
+# Copy composer files first
+COPY composer.json composer.lock ./
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
-# Discover packages after install
-RUN php artisan package:discover || true
+# Clear any cached config
+RUN rm -rf bootstrap/cache/*.php || true
+
+# Copy application files
+COPY . .
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
@@ -57,9 +60,6 @@ RUN mkdir -p /var/www/html/storage/framework/cache \
 
 # Generate application key
 RUN php artisan key:generate || true
-
-# Create storage link
-RUN php artisan storage:link || true
 
 # Create startup script for database migrations
 RUN echo '#!/bin/bash' > /start.sh && \
