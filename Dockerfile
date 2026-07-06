@@ -46,7 +46,10 @@ RUN echo "<VirtualHost *:80>" > /etc/apache2/sites-available/000-default.conf &&
 COPY . .
 
 # Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+
+# Discover packages after install
+RUN php artisan package:discover || true
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
