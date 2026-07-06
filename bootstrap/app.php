@@ -24,23 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Force HTTPS scheme and secure cookies in production
         if (getenv('APP_ENV') === 'production') {
-            $middleware->prepend(function ($request, $next) {
-                if (!$request->secure() && env('FORCE_HTTPS', false)) {
-                    return redirect()->secure($request->getRequestUri());
-                }
-                $response = $next($request);
-                
-                // Set secure cookie flags
-                if ($request->secure()) {
-                    config(['session.secure' => true]);
-                    config(['cookie.secure' => true]);
-                    
-                    // Add HSTS headers
-                    $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
-                }
-                
-                return $response;
-            });
+            $middleware->append(\App\Http\Middleware\ForceHttps::class);
         }
     })
     ->withExceptions(function (Exceptions $exceptions) {
