@@ -74,8 +74,9 @@ RUN php artisan storage:link || true
 # Create startup script for database migrations
 RUN echo '#!/bin/bash' > /start.sh && \
     echo 'set -e' >> /start.sh && \
-    echo 'php artisan migrate --force || true' >> /start.sh && \
-    echo 'php artisan db:seed --force || true' >> /start.sh && \
+    echo 'php artisan config:clear || true' >> /start.sh && \
+    echo 'php artisan migrate --force' >> /start.sh && \
+    echo 'php artisan db:seed --force' >> /start.sh && \
     echo 'php artisan config:cache || true' >> /start.sh && \
     echo 'php artisan route:cache || true' >> /start.sh && \
     echo 'php artisan view:cache || true' >> /start.sh && \
