@@ -23,12 +23,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(\App\Http\Middleware\TrustProxies::class);
 
         // Force HTTPS in production
-        if (app()->environment('production')) {
+        if (getenv('APP_ENV') === 'production') {
             $middleware->redirectToHttps();
         }
 
         // Force HTTPS scheme and secure cookies in production
-        if (app()->environment('production')) {
+        if (getenv('APP_ENV') === 'production') {
             $middleware->prepend(function ($request, $next) {
                 if (!$request->secure() && env('FORCE_HTTPS', false)) {
                     return redirect()->secure($request->getRequestUri());
